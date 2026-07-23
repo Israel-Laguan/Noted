@@ -9,16 +9,40 @@ const { logout, notes, categories } = vi.hoisted(() => ({
   categories: vi.fn(),
 }));
 
-vi.mock("../AuthProvider", () => ({ useAuth: () => ({ user: { id: 1, email: "owner@example.com", first_name: "Owner" }, logout }) }));
-vi.mock("next/link", () => ({ default: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => <a href={href} {...props}>{children}</a> }));
+vi.mock("../AuthProvider", () => ({
+  useAuth: () => ({ user: { id: 1, email: "owner@example.com", first_name: "Owner" }, logout }),
+}));
+vi.mock("next/link", () => ({
+  default: ({
+    children,
+    href,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
 vi.mock("@/lib/api", () => ({ api: { notes, categories } }));
-vi.mock("@/assets/svgs/plus.svg", () => ({ default: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} /> }));
+vi.mock("@/assets/svgs/plus.svg", () => ({
+  default: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} />,
+}));
 
 describe("NotesDashboard", () => {
   beforeEach(() => {
     logout.mockReset();
     notes.mockReset().mockResolvedValue({ results: [] });
-    categories.mockReset().mockResolvedValue({ results: [{ id: 1, name: "Personal", color: "#7CB3B1", note_count: 3, created_at: "2026-07-22T12:00:00Z" }] });
+    categories.mockReset().mockResolvedValue({
+      results: [
+        {
+          id: 1,
+          name: "Personal",
+          color: "#7CB3B1",
+          note_count: 3,
+          created_at: "2026-07-22T12:00:00Z",
+        },
+      ],
+    });
   });
 
   it("renders the logout button with the user's initial", async () => {

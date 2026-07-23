@@ -4,14 +4,24 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api";
 const TOKEN_KEY = "notes.tokens";
 
 export class ApiError extends Error {
-  constructor(message: string, public status: number, public details?: unknown) { super(message); }
+  constructor(
+    message: string,
+    public status: number,
+    public details?: unknown
+  ) {
+    super(message);
+  }
 }
 
 export function getTokens(): Tokens | null {
   if (typeof window === "undefined") return null;
   const raw = window.localStorage.getItem(TOKEN_KEY);
   if (!raw) return null;
-  try { return JSON.parse(raw) as Tokens; } catch { return null; }
+  try {
+    return JSON.parse(raw) as Tokens;
+  } catch {
+    return null;
+  }
 }
 
 export function saveTokens(tokens: Tokens | null) {
@@ -38,10 +48,15 @@ async function refreshAccessToken(): Promise<string | null> {
   const tokens = getTokens();
   if (!tokens?.refresh) return null;
   const response = await fetch(`${API_URL}/auth/token/refresh/`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refresh: tokens.refresh }),
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh: tokens.refresh }),
   });
-  if (!response.ok) { saveTokens(null); return null; }
-  const data = await response.json() as { access: string; refresh?: string };
+  if (!response.ok) {
+    saveTokens(null);
+    return null;
+  }
+  const data = (await response.json()) as { access: string; refresh?: string };
   saveTokens({ access: data.access, refresh: data.refresh ?? tokens.refresh });
   return data.access;
 }
@@ -58,7 +73,11 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
   }
   if (!response.ok) {
     let body: unknown;
-    try { body = await response.json(); } catch { body = null; }
+    try {
+      body = await response.json();
+    } catch {
+      body = null;
+    }
     throw new ApiError(errorMessage(body), response.status, body);
   }
   if (response.status === 204) return undefined as T;
@@ -66,8 +85,10 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
 }
 
 export const api = {
-  register: (payload: { email: string; password: string; first_name?: string }) => request<AuthResponse>("/auth/register/", { method: "POST", body: JSON.stringify(payload) }),
-  login: (payload: { email: string; password: string }) => request<AuthResponse>("/auth/token/", { method: "POST", body: JSON.stringify(payload) }),
+  register: (payload: { email: string; password: string; first_name?: string }) =>
+    request<AuthResponse>("/auth/register/", { method: "POST", body: JSON.stringify(payload) }),
+  login: (payload: { email: string; password: string }) =>
+    request<AuthResponse>("/auth/token/", { method: "POST", body: JSON.stringify(payload) }),
   me: () => request<User>("/auth/me/"),
   categories: () => request<Paginated<Category>>("/categories/"),
   notes: (params?: { category?: number; search?: string }) => {
@@ -77,7 +98,9 @@ export const api = {
     return request<Paginated<Note>>(`/notes/${query.size ? `?${query}` : ""}`);
   },
   note: (id: number) => request<Note>(`/notes/${id}/`),
-  createNote: (payload: Pick<Note, "category" | "title" | "content">) => request<Note>("/notes/", { method: "POST", body: JSON.stringify(payload) }),
-  updateNote: (id: number, payload: Partial<Pick<Note, "category" | "title" | "content">>) => request<Note>(`/notes/${id}/`, { method: "PATCH", body: JSON.stringify(payload) }),
+  createNote: (payload: Pick<Note, "category" | "title" | "content">) =>
+    request<Note>("/notes/", { method: "POST", body: JSON.stringify(payload) }),
+  updateNote: (id: number, payload: Partial<Pick<Note, "category" | "title" | "content">>) =>
+    request<Note>(`/notes/${id}/`, { method: "PATCH", body: JSON.stringify(payload) }),
   deleteNote: (id: number) => request<void>(`/notes/${id}/`, { method: "DELETE" }),
 };

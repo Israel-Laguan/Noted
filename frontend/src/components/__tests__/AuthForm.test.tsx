@@ -6,15 +6,23 @@ import { AuthForm } from "../AuthForm";
 const login = vi.fn();
 const register = vi.fn();
 vi.mock("../AuthProvider", () => ({ useAuth: () => ({ login, register }) }));
-vi.mock("next/link", () => ({ default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a> }));
+vi.mock("next/link", () => ({
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
 vi.mock("@/assets/svgs/eye.svg", () => ({ default: () => <svg aria-hidden="true" /> }));
 
 describe("AuthForm", () => {
-  beforeEach(() => { login.mockReset(); register.mockReset(); });
+  beforeEach(() => {
+    login.mockReset();
+    register.mockReset();
+  });
 
   describe("login mode", () => {
     it("submits login credentials", async () => {
-      const user = userEvent.setup(); render(<AuthForm mode="login" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
       await user.type(screen.getByLabelText("Email address"), "owner@example.com");
       await user.type(screen.getByLabelText("Password"), "strong-pass-123");
       await user.click(screen.getByRole("button", { name: "Login" }));
@@ -23,7 +31,8 @@ describe("AuthForm", () => {
 
     it("shows API errors", async () => {
       login.mockRejectedValue(new Error("Invalid credentials"));
-      const user = userEvent.setup(); render(<AuthForm mode="login" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
       await user.type(screen.getByLabelText("Email address"), "owner@example.com");
       await user.type(screen.getByLabelText("Password"), "wrong-password");
       await user.click(screen.getByRole("button", { name: "Login" }));
@@ -33,7 +42,8 @@ describe("AuthForm", () => {
 
   describe("signup mode", () => {
     it("submits registration credentials", async () => {
-      const user = userEvent.setup(); render(<AuthForm mode="signup" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="signup" />);
       await user.type(screen.getByLabelText("Email address"), "new@example.com");
       await user.type(screen.getByLabelText("Password"), "strong-pass-123");
       await user.click(screen.getByRole("button", { name: "Sign Up" }));
@@ -42,17 +52,21 @@ describe("AuthForm", () => {
 
     it("shows API errors", async () => {
       register.mockRejectedValue(new Error("An account with this email already exists."));
-      const user = userEvent.setup(); render(<AuthForm mode="signup" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="signup" />);
       await user.type(screen.getByLabelText("Email address"), "new@example.com");
       await user.type(screen.getByLabelText("Password"), "strong-pass-123");
       await user.click(screen.getByRole("button", { name: "Sign Up" }));
-      expect(await screen.findByRole("alert")).toHaveTextContent("An account with this email already exists.");
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "An account with this email already exists."
+      );
     });
   });
 
   describe("password visibility", () => {
     it("toggles password visibility", async () => {
-      const user = userEvent.setup(); render(<AuthForm mode="login" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
       const passwordInput = screen.getByLabelText("Password") as HTMLInputElement;
       expect(passwordInput.type).toBe("password");
       await user.click(screen.getByRole("button", { name: "Show password" }));
@@ -65,7 +79,8 @@ describe("AuthForm", () => {
   describe("submitting state", () => {
     it("shows a loading label and disables the button while submitting", async () => {
       login.mockImplementation(() => new Promise(() => {}));
-      const user = userEvent.setup(); render(<AuthForm mode="login" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
       await user.type(screen.getByLabelText("Email address"), "owner@example.com");
       await user.type(screen.getByLabelText("Password"), "strong-pass-123");
       await user.click(screen.getByRole("button", { name: "Login" }));
@@ -74,7 +89,8 @@ describe("AuthForm", () => {
 
     it("re-enables the button after an error", async () => {
       login.mockRejectedValue(new Error("Invalid credentials"));
-      const user = userEvent.setup(); render(<AuthForm mode="login" />);
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
       await user.type(screen.getByLabelText("Email address"), "owner@example.com");
       await user.type(screen.getByLabelText("Password"), "wrong-password");
       await user.click(screen.getByRole("button", { name: "Login" }));
@@ -86,12 +102,18 @@ describe("AuthForm", () => {
   describe("navigation", () => {
     it("links to the signup page from login", () => {
       render(<AuthForm mode="login" />);
-      expect(screen.getByRole("link", { name: /never been here before/ })).toHaveAttribute("href", "/signup");
+      expect(screen.getByRole("link", { name: /never been here before/ })).toHaveAttribute(
+        "href",
+        "/signup"
+      );
     });
 
     it("links to the login page from signup", () => {
       render(<AuthForm mode="signup" />);
-      expect(screen.getByRole("link", { name: /already friends/ })).toHaveAttribute("href", "/login");
+      expect(screen.getByRole("link", { name: /already friends/ })).toHaveAttribute(
+        "href",
+        "/login"
+      );
     });
   });
 

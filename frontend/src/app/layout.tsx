@@ -14,7 +14,16 @@ const inriaSerif = Inria_Serif({
   variable: "--font-inria-serif",
 });
 
-
-export const metadata: Metadata = { title: { default: "Noted", template: "%s · Noted" }, description: "A calm place for your notes and ideas." };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en" className={`${inter.variable} ${inriaSerif.variable}`}><body><AuthProvider>{children}</AuthProvider></body></html>; }
-
+export const metadata: Metadata = {
+  title: { default: "Noted", template: "%s · Noted" },
+  description: "A calm place for your notes and ideas.",
+};
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en" className={`${inter.variable} ${inriaSerif.variable}`}>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
+    </html>
+  );
+}

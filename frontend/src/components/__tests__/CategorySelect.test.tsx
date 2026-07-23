@@ -3,10 +3,18 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CategorySelect } from "../CategorySelect";
 
-vi.mock("@/assets/svgs/down.svg", () => ({ default: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} /> }));
+vi.mock("@/assets/svgs/down.svg", () => ({
+  default: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} />,
+}));
 
 const categories = [
-  { id: 1, name: "Random Thoughts", color: "#EF9C66", note_count: 2, created_at: "2026-07-22T12:00:00Z" },
+  {
+    id: 1,
+    name: "Random Thoughts",
+    color: "#EF9C66",
+    note_count: 2,
+    created_at: "2026-07-22T12:00:00Z",
+  },
   { id: 2, name: "School", color: "#FCD980", note_count: 1, created_at: "2026-07-22T12:00:00Z" },
   { id: 3, name: "Personal", color: "#7CB3B1", note_count: 3, created_at: "2026-07-22T12:00:00Z" },
 ];
