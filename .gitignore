@@ -24,3 +24,6 @@ backend/db.sqlite3
 # IDE
 .vscode/
 .idea/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
