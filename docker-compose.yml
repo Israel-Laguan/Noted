@@ -1,21 +1,20 @@
 services:
   database:
-    image: docker.io/library/postgres:17-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_DB: notes
       POSTGRES_USER: notes
       POSTGRES_PASSWORD: notes
-    volumes:
+      volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U notes"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U notes"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
 
   backend:
     build: ./backend
-    image: docker.io/library/python:3.13-slim
     environment:
       DATABASE_URL: postgresql://notes:notes@database:5432/notes
       DJANGO_SECRET_KEY: local-docker-secret-change-in-production
@@ -33,7 +32,6 @@ services:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: http://localhost:8080/api
-    image: docker.io/library/node:22-alpine
     ports:
       - "3000:3000"
     depends_on:

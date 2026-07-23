@@ -11,8 +11,7 @@ function useAutosave(
   category: number,
   title: string,
   content: string,
-  onSaved: (updatedAt: string) => void,
-  onFirstSaved?: () => void
+  onSaved: (updatedAt: string) => void
 ) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const lastSaved = useRef("");
@@ -34,7 +33,6 @@ function useAutosave(
         lastSaved.current = snapshot;
         setStatus("saved");
         onSaved(savedNote.updated_at);
-        onFirstSaved?.();
         return savedNote;
       } catch {
         if (currentSaveId !== saveIdRef.current) return;
@@ -42,7 +40,7 @@ function useAutosave(
       }
     }, 500);
     return () => window.clearTimeout(timer);
-  }, [category, content, id, onFirstSaved, onSaved, ready, title]);
+  }, [category, content, id, onSaved, ready, title]);
 
   function markSaved(snapshot: string) {
     lastSaved.current = snapshot;
@@ -70,10 +68,7 @@ export function useNoteEditor(id: number) {
   const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [isNew, setIsNew] = useState(false);
-  const autosave = useAutosave(id, ready, category, title, content, setUpdatedAt, () =>
-    setIsNew(false)
-  );
+  const autosave = useAutosave(id, ready, category, title, content, setUpdatedAt);
 
   useEffect(() => {
     if (!Number.isInteger(id) || id < 1) {
@@ -90,7 +85,6 @@ export function useNoteEditor(id: number) {
         autosave.markSaved(
           JSON.stringify({ category: note.category, title: note.title, content: note.content })
         );
-        setIsNew(!note.title && !note.content);
         setReady(true);
       })
       .catch((cause) =>
@@ -103,21 +97,11 @@ export function useNoteEditor(id: number) {
     const snapshot = autosave.getSnapshot();
     const savedNote = await api.updateNote(id, { category, title, content });
     autosave.markSaved(snapshot);
-    setIsNew(false);
     return savedNote;
   }
 
   async function closeEditor() {
     setClosing(true);
-    if (!title.trim() && !content.trim()) {
-      try {
-        await api.deleteNote(id);
-      } catch {
-        // Note may have already been deleted; navigate back regardless
-      }
-      router.push("/notes");
-      return;
-    }
     if (ready && autosave.isDirty()) {
       try {
         await flushSave();
@@ -161,6 +145,5 @@ export function useNoteEditor(id: number) {
     confirmDelete,
     remove: () => setShowDeleteModal(true),
     goBack: () => router.push("/notes"),
-    isNew,
   };
 }

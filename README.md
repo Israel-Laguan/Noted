@@ -82,43 +82,6 @@ To run the complete stack with PostgreSQL:
 docker compose up --build
 ```
 
-### Podman
-
-Podman is supported via `docker compose up --build` or `podman compose up --build`. Note:
-
-- Container-to-container networking requires `aardvark-dns` (not installed by default on many systems)
-- Without `aardvark-dns`, containers cannot resolve each other by service name (`database`, etc.)
-- Full image names (`docker.io/library/...`) are used to avoid short-name resolution issues
-
-If `aardvark-dns` is unavailable, use this manual approach:
-
-```bash
-# Start PostgreSQL
-podman run -d --name noted-db \
-  -p 5432:5432 \
-  -e POSTGRES_DB=notes \
-  -e POSTGRES_USER=notes \
-  -e POSTGRES_PASSWORD=notes \
-  postgres:17-alpine
-
-# Build and start backend (connects to host PostgreSQL)
-podman build -t noted-backend ./backend
-podman run -d --name noted-backend \
-  -p 8080:8080 \
-  -e DATABASE_URL=postgresql://notes:notes@host.containers.internal:5432/notes \
-  -e DJANGO_SECRET_KEY=local-docker-secret-change-in-production \
-  -e DJANGO_DEBUG=false \
-  noted-backend
-
-# Build and start frontend
-podman build -t noted-frontend ./frontend
-podman run -d --name noted-frontend \
-  -p 3000:3000 \
-  noted-frontend
-```
-
-Open `http://localhost:3000` to access the application.
-
 ## API overview
 
 | Method | Endpoint | Purpose |

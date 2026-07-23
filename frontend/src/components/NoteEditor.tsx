@@ -179,7 +179,6 @@ export function NoteEditor() {
     confirmDelete,
     remove,
     goBack,
-    isNew,
   } = useNoteEditor(id);
 
   const selectedCategory = categories.find((item) => item.id === category);
@@ -200,7 +199,7 @@ export function NoteEditor() {
         disabled={closing}
         onDelete={remove}
         onClose={closeEditor}
-        showDelete={!isNew}
+        showDelete={true}
       />
       <DeleteNoteModal
         open={showDeleteModal}
