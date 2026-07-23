@@ -64,7 +64,7 @@ Install development dependencies first (requires `backend/requirements-dev.txt` 
 
 ```bash
 cd backend
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+source .venv/bin/activate  # Windows cmd: .venv\Scripts\activate.bat; PowerShell: .\.venv\Scripts\Activate.ps1
 pytest
 python manage.py check
 

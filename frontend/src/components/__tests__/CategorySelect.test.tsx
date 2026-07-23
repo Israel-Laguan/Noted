@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { useState } from "react";
 import { CategorySelect } from "../CategorySelect";
 
 vi.mock("@/assets/svgs/down.svg", () => ({
@@ -42,5 +43,26 @@ describe("CategorySelect", () => {
     trigger.focus();
     await user.keyboard("{ArrowDown}{ArrowDown}{Enter}");
     expect(onChange).toHaveBeenCalledWith(2);
+  });
+
+  it("closes the category list when disabled becomes true", async () => {
+    function Wrapper() {
+      const [disabled, setDisabled] = useState(false);
+      return (
+        <>
+          <CategorySelect categories={categories} value={1} onChange={vi.fn()} disabled={disabled} />
+          <button onClick={() => setDisabled(true)}>disable</button>
+        </>
+      );
+    }
+
+    const user = userEvent.setup();
+    render(<Wrapper />);
+
+    await user.click(screen.getByRole("button", { name: "Category" }));
+    expect(screen.getByRole("listbox", { name: "Categories" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "disable" }));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 });
