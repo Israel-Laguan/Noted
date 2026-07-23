@@ -50,6 +50,7 @@ function EditorHeader({
   disabled,
   onDelete,
   onClose,
+  showDelete,
 }: {
   categories: Category[];
   category: number;
@@ -58,6 +59,7 @@ function EditorHeader({
   disabled: boolean;
   onDelete: () => void;
   onClose: () => void;
+  showDelete: boolean;
 }) {
   return (
     <header className="mb-3.5 flex min-h-12 items-center gap-3 max-sm:gap-[5px]">
@@ -79,15 +81,17 @@ function EditorHeader({
               : ""}
       </span>
       <div className="flex-1" />
-      <button
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent hover:bg-danger/10"
-        onClick={onDelete}
-        disabled={disabled}
-        aria-label="Delete note"
-        title="Delete note"
-      >
-        <Delete className="h-6 w-6 text-ink/70 hover:text-danger" aria-hidden="true" />
-      </button>
+      {showDelete && (
+        <button
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent hover:bg-danger/10"
+          onClick={onDelete}
+          disabled={disabled}
+          aria-label="Delete note"
+          title="Delete note"
+        >
+          <Delete className="h-6 w-6 text-ink/70 hover:text-danger" aria-hidden="true" />
+        </button>
+      )}
       <button
         type="button"
         className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent"
@@ -175,6 +179,7 @@ export function NoteEditor() {
     confirmDelete,
     remove,
     goBack,
+    isNew,
   } = useNoteEditor(id);
 
   const selectedCategory = categories.find((item) => item.id === category);
@@ -195,6 +200,7 @@ export function NoteEditor() {
         disabled={closing}
         onDelete={remove}
         onClose={closeEditor}
+        showDelete={!isNew}
       />
       <DeleteNoteModal
         open={showDeleteModal}
