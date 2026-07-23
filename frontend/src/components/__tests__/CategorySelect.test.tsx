@@ -50,7 +50,12 @@ describe("CategorySelect", () => {
       const [disabled, setDisabled] = useState(false);
       return (
         <>
-          <CategorySelect categories={categories} value={1} onChange={vi.fn()} disabled={disabled} />
+          <CategorySelect
+            categories={categories}
+            value={1}
+            onChange={vi.fn()}
+            disabled={disabled}
+          />
           <button onClick={() => setDisabled(true)}>disable</button>
         </>
       );
