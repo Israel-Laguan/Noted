@@ -8,9 +8,10 @@ type CategorySelectProps = {
   categories: Category[];
   value: number;
   onChange: (categoryId: number) => void;
+  disabled?: boolean;
 };
 
-export function CategorySelect({ categories, value, onChange }: CategorySelectProps) {
+export function CategorySelect({ categories, value, onChange, disabled }: CategorySelectProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -64,10 +65,11 @@ export function CategorySelect({ categories, value, onChange }: CategorySelectPr
     <div ref={rootRef} className="relative z-20 w-[255px] shrink-0 max-sm:w-[190px]">
       <button
         type="button"
-        className="flex h-10 w-full items-center gap-3 rounded-[11px] border border-line bg-paper px-4 text-left text-[16px] outline-none"
+        className="flex h-10 w-full items-center gap-3 rounded-[11px] border border-line bg-paper px-4 text-left text-[16px] outline-none disabled:cursor-not-allowed disabled:opacity-50"
         aria-label="Category"
         aria-haspopup="listbox"
         aria-expanded={open}
+        disabled={disabled}
         onClick={() => (open ? setOpen(false) : openMenu())}
         onKeyDown={handleKeyDown}
       >

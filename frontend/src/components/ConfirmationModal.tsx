@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type ConfirmationModalProps = {
   open: boolean;
@@ -21,11 +21,13 @@ export function ConfirmationModal({
 }: ConfirmationModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const messageId = useId();
 
   useEffect(() => {
     if (open) {
       previousFocus.current = document.activeElement as HTMLElement;
-      dialogRef.current?.focus();
+      const firstButton = dialogRef.current?.querySelector<HTMLButtonElement>("button");
+      firstButton?.focus();
     } else if (previousFocus.current) {
       previousFocus.current.focus();
     }
@@ -45,6 +47,7 @@ export function ConfirmationModal({
         );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
         if (e.shiftKey) {
           if (document.activeElement === first) {
             e.preventDefault();
@@ -72,6 +75,7 @@ export function ConfirmationModal({
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
+      aria-describedby={messageId}
     >
       <div
         ref={dialogRef}
@@ -79,15 +83,19 @@ export function ConfirmationModal({
         className="mx-4 w-full max-w-sm rounded-[13px] border border-line bg-white p-6 shadow-lg outline-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="mb-6 text-center text-[16px] font-bold text-line">{message}</p>
+        <p id={messageId} className="mb-6 text-center text-[16px] font-bold text-line">
+          {message}
+        </p>
         <div className="flex justify-center gap-3">
           <button
+            type="button"
             className="flex h-[42px] cursor-pointer items-center justify-center rounded-full border border-line px-6 text-[14px] font-bold text-line hover:bg-line/20"
             onClick={onCancel}
           >
             Cancel
           </button>
           <button
+            type="button"
             className="flex h-[42px] cursor-pointer items-center justify-center rounded-full bg-error-text px-6 text-[14px] font-bold text-white hover:opacity-90"
             onClick={onConfirm}
           >

@@ -47,6 +47,7 @@ function EditorHeader({
   category,
   onCategoryChange,
   status,
+  disabled,
   onDelete,
   onClose,
 }: {
@@ -54,12 +55,13 @@ function EditorHeader({
   category: number;
   onCategoryChange: (id: number) => void;
   status: SaveStatus;
+  disabled: boolean;
   onDelete: () => void;
   onClose: () => void;
 }) {
   return (
     <header className="mb-3.5 flex min-h-12 items-center gap-3 max-sm:gap-[5px]">
-      <CategorySelect categories={categories} value={category} onChange={onCategoryChange} />
+      <CategorySelect categories={categories} value={category} onChange={onCategoryChange} disabled={disabled} />
       <span
         className={`text-[11px] ${status === "error" ? "text-danger" : status === "saved" ? "text-success" : "text-muted"}`}
       >
@@ -75,6 +77,7 @@ function EditorHeader({
       <button
         className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent hover:bg-danger/10"
         onClick={onDelete}
+        disabled={disabled}
         aria-label="Delete note"
         title="Delete note"
       >
@@ -84,6 +87,7 @@ function EditorHeader({
         type="button"
         className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent"
         onClick={onClose}
+        disabled={disabled}
         aria-label="Close note"
       >
         <Close className="h-6 w-6" aria-hidden="true" />
@@ -183,6 +187,7 @@ export function NoteEditor() {
           markEdited();
         }}
         status={status}
+        disabled={closing}
         onDelete={remove}
         onClose={closeEditor}
       />

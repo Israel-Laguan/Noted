@@ -5,7 +5,14 @@ import type { Category } from "@/lib/types";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
-function useAutosave(id: number, ready: boolean, category: number, title: string, content: string) {
+function useAutosave(
+  id: number,
+  ready: boolean,
+  category: number,
+  title: string,
+  content: string,
+  onSaved: (updatedAt: string) => void,
+) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const lastSaved = useRef("");
   const saveIdRef = useRef(0);
@@ -25,6 +32,7 @@ function useAutosave(id: number, ready: boolean, category: number, title: string
         if (currentSaveId !== saveIdRef.current) return;
         lastSaved.current = snapshot;
         setStatus("saved");
+        onSaved(savedNote.updated_at);
         return savedNote;
       } catch {
         if (currentSaveId !== saveIdRef.current) return;
@@ -32,7 +40,7 @@ function useAutosave(id: number, ready: boolean, category: number, title: string
       }
     }, 500);
     return () => window.clearTimeout(timer);
-  }, [category, content, id, ready, title]);
+  }, [category, content, id, onSaved, ready, title]);
 
   function markSaved(snapshot: string) {
     lastSaved.current = snapshot;
@@ -60,7 +68,9 @@ export function useNoteEditor(id: number) {
   const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [closing, setClosing] = useState(false);
-  const autosave = useAutosave(id, ready, category, title, content);
+  const autosave = useAutosave(id, ready, category, title, content, (updatedAt) =>
+    setUpdatedAt(updatedAt),
+  );
 
   useEffect(() => {
     if (!Number.isInteger(id) || id < 1) {
