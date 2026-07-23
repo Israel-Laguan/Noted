@@ -19,7 +19,7 @@ export function NoteCard({ note }: { note: Note }) {
         </time>
         <span>{note.category_name}</span>
       </div>
-      <h2 className="my-3 line-clamp-2 font-serif text-[24px] font-bold">
+      <h2 className="my-2 line-clamp-2 font-serif text-[24px] font-bold">
         {note.title.trim() || "Untitled note"}
       </h2>
       {note.content && (
