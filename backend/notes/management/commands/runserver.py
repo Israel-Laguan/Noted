@@ -13,9 +13,9 @@ class Command(StaticfilesRunserverCommand):
     def handle(self, *args, **options):
         from notes.models import Category, Note
 
-        User = get_user_model()
-        if not User.objects.filter(username="demo@noted.app").exists():
-            user = User.objects.create(
+        user_model = get_user_model()
+        if not user_model.objects.filter(username="demo@noted.app").exists():
+            user = user_model.objects.create(
                 username="demo@noted.app",
                 email="demo@noted.app",
                 password=make_password("demo1234"),

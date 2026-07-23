@@ -55,7 +55,7 @@ def test_login_uses_email(client, user):
 
 
 @pytest.mark.django_db
-def test_register_rejects_duplicate_email(client, user):
+def test_register_rejects_duplicate_email(client, _user):
     response = client.post(
         "/api/auth/register/", {"email": "owner@example.com", "password": "strong-pass-123"}
     )
@@ -71,7 +71,7 @@ def test_register_rejects_short_password(client):
 
 
 @pytest.mark.django_db
-def test_login_rejects_wrong_password(client, user):
+def test_login_rejects_wrong_password(client, _user):
     response = client.post(
         "/api/auth/token/", {"email": "owner@example.com", "password": "wrong-password"}
     )
@@ -139,7 +139,7 @@ def test_notes_are_scoped_to_authenticated_owner(authed_client, user):
 
 
 @pytest.mark.django_db
-def test_cannot_assign_someone_elses_category(authed_client, user):
+def test_cannot_assign_someone_elses_category(authed_client, _user):
     other = User.objects.create_user(username="other@example.com", password="strong-pass-123")
     category = Category.objects.create(owner=other, name="Private")
     response = authed_client.post(

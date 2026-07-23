@@ -12,7 +12,7 @@ class Category(models.Model):
 
     class Meta:
         ordering = ("created_at",)
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(fields=("owner", "name"), name="unique_category_name_per_owner")
         ]
 
@@ -32,7 +32,7 @@ class Note(models.Model):
 
     class Meta:
         ordering = ("-updated_at",)
-        indexes = [
+        indexes = [  # noqa: RUF012
             models.Index(fields=("owner", "-updated_at"), name="note_owner_updated_idx"),
             models.Index(fields=("owner", "category"), name="note_owner_category_idx"),
         ]
