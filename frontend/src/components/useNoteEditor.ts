@@ -68,9 +68,7 @@ export function useNoteEditor(id: number) {
   const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [closing, setClosing] = useState(false);
-  const autosave = useAutosave(id, ready, category, title, content, (updatedAt) =>
-    setUpdatedAt(updatedAt)
-  );
+  const autosave = useAutosave(id, ready, category, title, content, setUpdatedAt);
 
   useEffect(() => {
     if (!Number.isInteger(id) || id < 1) {

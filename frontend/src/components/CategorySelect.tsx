@@ -29,6 +29,10 @@ export function CategorySelect({ categories, value, onChange, disabled }: Catego
     return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
   }, []);
 
+  useEffect(() => {
+    if (disabled) setOpen(false);
+  }, [disabled]);
+
   function openMenu() {
     setActiveIndex(selectedIndex);
     setOpen(true);
