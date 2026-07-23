@@ -13,4 +13,3 @@ urlpatterns = [
     path("api/auth/me/", MeView.as_view(), name="me"),
     path("api/", include("notes.urls")),
 ]
-

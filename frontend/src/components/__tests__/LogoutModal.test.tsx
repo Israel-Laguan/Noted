@@ -5,7 +5,9 @@ import { LogoutModal } from "../LogoutModal";
 
 describe("LogoutModal", () => {
   it("does not render when closed", () => {
-    const { container } = render(<LogoutModal open={false} onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    const { container } = render(
+      <LogoutModal open={false} onConfirm={vi.fn()} onCancel={vi.fn()} />
+    );
     expect(container.firstChild).toBeNull();
   });
 

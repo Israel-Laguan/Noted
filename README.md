@@ -27,6 +27,7 @@ python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt  # for testing and linting tools
 python manage.py migrate
 python manage.py runserver
 ```
@@ -44,6 +45,11 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Requirements
+
+- `backend/requirements.txt` — production dependencies only (installed by Docker image)
+- `backend/requirements-dev.txt` — development tools (pytest, ruff)
+
 ## Demo account
 
 A demo account is automatically created when running the development server locally (`python manage.py runserver`). This does not apply to Docker production deployments.
@@ -54,8 +60,11 @@ A demo account is automatically created when running the development server loca
 
 ## Tests and checks
 
+Install development dependencies first (requires `backend/requirements-dev.txt` and an activated `.venv`):
+
 ```bash
 cd backend
+source .venv/bin/activate  # Windows cmd: .venv\Scripts\activate.bat; PowerShell: .\.venv\Scripts\Activate.ps1
 pytest
 python manage.py check
 

@@ -25,9 +25,39 @@ export function NewNoteBootstrap() {
     }
   }, [router]);
 
-  useEffect(() => { void createNote(); }, [createNote]);
+  useEffect(() => {
+    void createNote();
+  }, [createNote]);
 
-  return <main className="grid min-h-screen place-content-center justify-items-center p-6 text-center">
-    {error ? <><div className="text-[62px] text-accent" aria-hidden="true">✎</div><h1 className="mb-1 mt-3 font-serif text-3xl font-medium">We couldn&apos;t create that note.</h1><p className="mb-5 max-w-[420px] text-muted" role="alert">{error}</p><button className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-accent bg-accent px-[22px] text-sm font-bold text-cream" onClick={createNote}>Try again</button></> : <div className="flex min-h-screen items-center justify-center gap-3 text-[13px] text-muted" role="status"><span className="h-[18px] w-[18px] animate-spin rounded-full border-2 border-line border-t-accent motion-reduce:animate-none" />Creating your note…</div>}
-  </main>;
+  return (
+    <main className="grid min-h-screen place-content-center justify-items-center p-6 text-center">
+      {error ? (
+        <>
+          <div className="text-[62px] text-accent" aria-hidden="true">
+            ✎
+          </div>
+          <h1 className="mb-1 mt-3 font-serif text-3xl font-medium">
+            We couldn&apos;t create that note.
+          </h1>
+          <p className="mb-5 max-w-[420px] text-muted" role="alert">
+            {error}
+          </p>
+          <button
+            className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-accent bg-accent px-[22px] text-sm font-bold text-cream"
+            onClick={createNote}
+          >
+            Try again
+          </button>
+        </>
+      ) : (
+        <div
+          className="flex min-h-screen items-center justify-center gap-3 text-[13px] text-muted"
+          role="status"
+        >
+          <span className="h-[18px] w-[18px] animate-spin rounded-full border-2 border-line border-t-accent motion-reduce:animate-none" />
+          Creating your note…
+        </div>
+      )}
+    </main>
+  );
 }

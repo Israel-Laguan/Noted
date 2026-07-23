@@ -23,7 +23,7 @@ User = get_user_model()
 class HealthView(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request):
+    def get(self, _request):
         return Response({"status": "ok"})
 
 
@@ -31,16 +31,19 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *_args, **_kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
-        return Response({
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "user": UserSerializer(user).data,
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):

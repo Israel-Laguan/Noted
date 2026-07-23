@@ -14,7 +14,8 @@ describe("note date formatting", () => {
   });
 
   it("formats a complete editor timestamp", () => {
-    expect(formatLastEdited(new Date(2026, 6, 22, 8, 5), now)).toMatch(/^Last edited today at 8:05 AM$/);
+    expect(formatLastEdited(new Date(2026, 6, 22, 8, 5), now)).toMatch(
+      /^Last edited today at 8:05 AM$/
+    );
   });
 });
-
