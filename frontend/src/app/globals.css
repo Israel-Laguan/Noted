@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply m-0 bg-paper font-sans text-ink;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
