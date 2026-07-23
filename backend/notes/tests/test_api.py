@@ -14,7 +14,9 @@ def client():
 
 @pytest.fixture
 def user():
-    return User.objects.create_user(username="owner@example.com", email="owner@example.com", password="strong-pass-123")
+    return User.objects.create_user(
+        username="owner@example.com", email="owner@example.com", password="strong-pass-123"
+    )
 
 
 @pytest.fixture
@@ -25,27 +27,38 @@ def authed_client(client, user):
 
 @pytest.mark.django_db
 def test_register_normalizes_email_and_creates_default_categories(client):
-    response = client.post("/api/auth/register/", {
-        "email": "  NEW@Example.com ",
-        "password": "strong-pass-123",
-        "first_name": "New",
-    })
+    response = client.post(
+        "/api/auth/register/",
+        {
+            "email": "  NEW@Example.com ",
+            "password": "strong-pass-123",
+            "first_name": "New",
+        },
+    )
     assert response.status_code == 201
     assert response.data["user"]["email"] == "new@example.com"
-    assert set(Category.objects.values_list("name", flat=True)) == {"Random Thoughts", "School", "Personal"}
+    assert set(Category.objects.values_list("name", flat=True)) == {
+        "Random Thoughts",
+        "School",
+        "Personal",
+    }
     assert response.data["access"]
 
 
 @pytest.mark.django_db
 def test_login_uses_email(client, user):
-    response = client.post("/api/auth/token/", {"email": "OWNER@example.com", "password": "strong-pass-123"})
+    response = client.post(
+        "/api/auth/token/", {"email": "OWNER@example.com", "password": "strong-pass-123"}
+    )
     assert response.status_code == 200
     assert response.data["user"]["id"] == user.id
 
 
 @pytest.mark.django_db
 def test_register_rejects_duplicate_email(client, user):
-    response = client.post("/api/auth/register/", {"email": "owner@example.com", "password": "strong-pass-123"})
+    response = client.post(
+        "/api/auth/register/", {"email": "owner@example.com", "password": "strong-pass-123"}
+    )
     assert response.status_code == 400
     assert "already exists" in str(response.data["error"]["details"]["email"])
 
@@ -59,28 +72,38 @@ def test_register_rejects_short_password(client):
 
 @pytest.mark.django_db
 def test_login_rejects_wrong_password(client, user):
-    response = client.post("/api/auth/token/", {"email": "owner@example.com", "password": "wrong-password"})
+    response = client.post(
+        "/api/auth/token/", {"email": "owner@example.com", "password": "wrong-password"}
+    )
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
 def test_login_rejects_unknown_email(client):
-    response = client.post("/api/auth/token/", {"email": "nobody@example.com", "password": "strong-pass-123"})
+    response = client.post(
+        "/api/auth/token/", {"email": "nobody@example.com", "password": "strong-pass-123"}
+    )
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
 def test_login_rejects_inactive_user(client):
-    user = User.objects.create_user(username="inactive@example.com", email="inactive@example.com", password="strong-pass-123")
+    user = User.objects.create_user(
+        username="inactive@example.com", email="inactive@example.com", password="strong-pass-123"
+    )
     user.is_active = False
     user.save()
-    response = client.post("/api/auth/token/", {"email": "inactive@example.com", "password": "strong-pass-123"})
+    response = client.post(
+        "/api/auth/token/", {"email": "inactive@example.com", "password": "strong-pass-123"}
+    )
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
 def test_token_refresh_returns_new_access_token(client):
-    response = client.post("/api/auth/register/", {"email": "new@example.com", "password": "strong-pass-123"})
+    response = client.post(
+        "/api/auth/register/", {"email": "new@example.com", "password": "strong-pass-123"}
+    )
     refresh = response.data["refresh"]
     response = client.post("/api/auth/token/refresh/", {"refresh": refresh})
     assert response.status_code == 200
@@ -119,7 +142,9 @@ def test_notes_are_scoped_to_authenticated_owner(authed_client, user):
 def test_cannot_assign_someone_elses_category(authed_client, user):
     other = User.objects.create_user(username="other@example.com", password="strong-pass-123")
     category = Category.objects.create(owner=other, name="Private")
-    response = authed_client.post("/api/notes/", {"category": category.id, "title": "Nope", "content": ""})
+    response = authed_client.post(
+        "/api/notes/", {"category": category.id, "title": "Nope", "content": ""}
+    )
     assert response.status_code == 400
     assert Note.objects.count() == 0
 
@@ -139,7 +164,9 @@ def test_filter_and_search_notes(authed_client, user):
 @pytest.mark.django_db
 def test_blank_note_can_be_created_immediately(authed_client, user):
     category = Category.objects.create(owner=user, name="Random Thoughts")
-    response = authed_client.post("/api/notes/", {"category": category.id, "title": "", "content": ""})
+    response = authed_client.post(
+        "/api/notes/", {"category": category.id, "title": "", "content": ""}
+    )
     assert response.status_code == 201
     assert response.data["title"] == ""
     assert response.data["content"] == ""

@@ -39,9 +39,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         email = validated_data.pop("email")
         user = User.objects.create_user(username=email, email=email, **validated_data)
-        Category.objects.bulk_create([
-            Category(owner=user, name=name, color=color) for name, color in DEFAULT_CATEGORIES
-        ])
+        Category.objects.bulk_create(
+            [Category(owner=user, name=name, color=color) for name, color in DEFAULT_CATEGORIES]
+        )
         return user
 
 
@@ -96,8 +96,14 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = (
-            "id", "category", "category_name", "category_color", "title", "content",
-            "created_at", "updated_at",
+            "id",
+            "category",
+            "category_name",
+            "category_color",
+            "title",
+            "content",
+            "created_at",
+            "updated_at",
         )
         read_only_fields = ("id", "category_name", "category_color", "created_at", "updated_at")
 

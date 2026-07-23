@@ -14,4 +14,3 @@ class NoteAdmin(admin.ModelAdmin):
     list_display = ("title", "owner", "category", "updated_at")
     list_filter = ("category",)
     search_fields = ("title", "content", "owner__email")
-
