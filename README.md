@@ -60,10 +60,11 @@ A demo account is automatically created when running the development server loca
 
 ## Tests and checks
 
-Install development dependencies first (requires `backend/requirements-dev.txt`):
+Install development dependencies first (requires `backend/requirements-dev.txt` and an activated `.venv`):
 
 ```bash
 cd backend
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pytest
 python manage.py check
 
