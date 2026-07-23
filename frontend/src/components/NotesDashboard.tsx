@@ -70,7 +70,7 @@ export function NotesDashboard() {
           {loading ? <div className="grid w-full grid-cols-3 gap-4 max-sm:grid-cols-1" aria-label="Loading notes">{[1, 2, 3].map((item) => <span className="h-[180px] animate-shimmer rounded-[13px] bg-[linear-gradient(100deg,#edddca_25%,#f7ead9_40%,#edddca_60%)] bg-[length:200%_100%] motion-reduce:animate-none" key={item} />)}</div>
             : notes.length ? <div className="grid w-full grid-cols-3 items-start gap-3.5 max-[900px]:grid-cols-2 max-sm:grid-cols-1">{notes.map((note) => <NoteCard key={note.id} note={note} />)}</div>
               : <div className="mx-auto flex flex-col items-center pt-[120px]">
-                <Image src={waiting} alt="Waiting" width={300} height={300} />
+                <Image src={waiting} alt="Waiting" width={300} height={300} className="animate-waitingBounce" />
                 <p className="text-[24px] text-muted">{search ? "No matching notes" : "I’m just here waiting for your charming notes..."}</p>
               </div>}
         </div>

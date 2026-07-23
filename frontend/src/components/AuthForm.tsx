@@ -40,12 +40,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         alt="Sign In"
         width={190}
         height={140}
+        className="animate-characterBounce"
       /> :
         <Image
           src={signup}
           alt="Sign Up"
           width={96}
           height={114}
+          className="animate-characterBounce"
         />
       }
       <h1 id="auth-title" className="mb-8 font-serif text-[48px] font-bold text-muted">{isSignup ? "Yay, New Friend!" : "Yay, You're Back!"}</h1>
