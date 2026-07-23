@@ -199,7 +199,7 @@ export function NoteEditor() {
         disabled={closing}
         onDelete={remove}
         onClose={closeEditor}
-        showDelete={true}
+        showDelete={Boolean(title.trim() || content.trim())}
       />
       <DeleteNoteModal
         open={showDeleteModal}
