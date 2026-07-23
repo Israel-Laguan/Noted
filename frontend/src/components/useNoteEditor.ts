@@ -5,6 +5,50 @@ import type { Category } from "@/lib/types";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
+function useAutosave(id: number, ready: boolean, category: number, title: string, content: string) {
+  const [status, setStatus] = useState<SaveStatus>("idle");
+  const lastSaved = useRef("");
+  const saveIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!ready || !category) return;
+    const snapshot = JSON.stringify({ category, title, content });
+    if (snapshot === lastSaved.current) {
+      setStatus("idle");
+      return;
+    }
+    setStatus("saving");
+    const currentSaveId = ++saveIdRef.current;
+    const timer = window.setTimeout(async () => {
+      try {
+        const savedNote = await api.updateNote(id, { category, title, content });
+        if (currentSaveId !== saveIdRef.current) return;
+        lastSaved.current = snapshot;
+        setStatus("saved");
+        return savedNote;
+      } catch {
+        if (currentSaveId !== saveIdRef.current) return;
+        setStatus("error");
+      }
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [category, content, id, ready, title]);
+
+  function markSaved(snapshot: string) {
+    lastSaved.current = snapshot;
+  }
+
+  function getSnapshot() {
+    return JSON.stringify({ category, title, content });
+  }
+
+  function isDirty() {
+    return getSnapshot() !== lastSaved.current;
+  }
+
+  return { status, setStatus, markSaved, getSnapshot, isDirty };
+}
+
 export function useNoteEditor(id: number) {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -12,11 +56,11 @@ export function useNoteEditor(id: number) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
-  const [status, setStatus] = useState<SaveStatus>("idle");
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const lastSaved = useRef("");
+  const [closing, setClosing] = useState(false);
+  const autosave = useAutosave(id, ready, category, title, content);
 
   useEffect(() => {
     if (!Number.isInteger(id) || id < 1) {
@@ -30,49 +74,32 @@ export function useNoteEditor(id: number) {
         setTitle(note.title);
         setContent(note.content);
         setUpdatedAt(note.updated_at);
-        lastSaved.current = JSON.stringify({
-          category: note.category,
-          title: note.title,
-          content: note.content,
-        });
+        autosave.markSaved(
+          JSON.stringify({ category: note.category, title: note.title, content: note.content })
+        );
         setReady(true);
       })
       .catch((cause) =>
         setError(cause instanceof Error ? cause.message : "Could not open this note.")
       );
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (!ready || !category) return;
-    const snapshot = JSON.stringify({ category, title, content });
-    if (snapshot === lastSaved.current) return;
-    setStatus("saving");
-    const timer = window.setTimeout(async () => {
-      try {
-        const savedNote = await api.updateNote(id, { category, title, content });
-        lastSaved.current = snapshot;
-        setUpdatedAt(savedNote.updated_at);
-        setStatus("saved");
-      } catch {
-        setStatus("error");
-      }
-    }, 500);
-    return () => window.clearTimeout(timer);
-  }, [category, content, id, ready, title]);
-
-  function markEdited() {
-    setUpdatedAt(new Date().toISOString());
+  async function flushSave() {
+    autosave.setStatus("saving");
+    const snapshot = autosave.getSnapshot();
+    const savedNote = await api.updateNote(id, { category, title, content });
+    autosave.markSaved(snapshot);
+    return savedNote;
   }
 
   async function closeEditor() {
-    const snapshot = JSON.stringify({ category, title, content });
-    if (ready && snapshot !== lastSaved.current) {
-      setStatus("saving");
+    setClosing(true);
+    if (ready && autosave.isDirty()) {
       try {
-        await api.updateNote(id, { category, title, content });
-        lastSaved.current = snapshot;
+        await flushSave();
       } catch (cause) {
-        setStatus("error");
+        setClosing(false);
+        autosave.setStatus("error");
         setError(cause instanceof Error ? cause.message : "Could not save the latest changes.");
         return;
       }
@@ -82,8 +109,12 @@ export function useNoteEditor(id: number) {
 
   async function confirmDelete() {
     setShowDeleteModal(false);
-    await api.deleteNote(id);
-    router.replace("/notes");
+    try {
+      await api.deleteNote(id);
+      router.replace("/notes");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not delete this note.");
+    }
   }
 
   return {
@@ -95,12 +126,13 @@ export function useNoteEditor(id: number) {
     content,
     setContent,
     updatedAt,
-    status,
+    status: autosave.status,
     ready,
+    closing,
     error,
     showDeleteModal,
     setShowDeleteModal,
-    markEdited,
+    markEdited: () => setUpdatedAt(new Date().toISOString()),
     closeEditor,
     confirmDelete,
     remove: () => setShowDeleteModal(true),

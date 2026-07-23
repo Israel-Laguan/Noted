@@ -80,10 +80,14 @@ function EditorHeader({
       >
         <Delete className="h-6 w-6 text-ink/70 hover:text-danger" aria-hidden="true" />
       </button>
-      <Close
-        className="w-6 h-6 cursor-pointer rounded-full border-0 bg-transparent "
+      <button
+        type="button"
+        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent"
         onClick={onClose}
-      />
+        aria-label="Close note"
+      >
+        <Close className="h-6 w-6" aria-hidden="true" />
+      </button>
     </header>
   );
 }
@@ -95,6 +99,7 @@ function EditorContent({
   onTitleChange,
   content,
   onContentChange,
+  disabled,
 }: {
   selectedCategory: Category | undefined;
   updatedAt: string;
@@ -102,6 +107,7 @@ function EditorContent({
   onTitleChange: (value: string) => void;
   content: string;
   onContentChange: (value: string) => void;
+  disabled: boolean;
 }) {
   return (
     <article
@@ -123,6 +129,7 @@ function EditorContent({
         placeholder="Note Title"
         maxLength={160}
         autoFocus
+        disabled={disabled}
       />
       <textarea
         className="mt-[22px] min-h-[300px] w-full flex-1 border-0 bg-transparent p-0 font-inter text-[16px] outline-none placeholder-black/50"
@@ -130,6 +137,7 @@ function EditorContent({
         value={content}
         onChange={(event) => onContentChange(event.target.value)}
         placeholder="Pour your heart out…"
+        disabled={disabled}
       />
     </article>
   );
@@ -149,6 +157,7 @@ export function NoteEditor() {
     updatedAt,
     status,
     ready,
+    closing,
     error,
     showDeleteModal,
     setShowDeleteModal,
@@ -203,6 +212,7 @@ export function NoteEditor() {
           setContent(value);
           markEdited();
         }}
+        disabled={closing}
       />
     </main>
   );

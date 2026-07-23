@@ -16,10 +16,10 @@ const primaryButtonClasses =
 function AuthImage({ isSignup }: { isSignup: boolean }) {
   return (
     <Image
-      src={isSignup ? signin : signup}
-      alt={isSignup ? "Sign In" : "Sign Up"}
-      width={isSignup ? 190 : 96}
-      height={isSignup ? 140 : 114}
+      src={isSignup ? signup : signin}
+      alt={isSignup ? "Sign Up" : "Sign In"}
+      width={isSignup ? 96 : 190}
+      height={isSignup ? 114 : 140}
       className="animate-characterBounce"
     />
   );
