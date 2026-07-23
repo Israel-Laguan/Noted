@@ -61,7 +61,12 @@ function EditorHeader({
 }) {
   return (
     <header className="mb-3.5 flex min-h-12 items-center gap-3 max-sm:gap-[5px]">
-      <CategorySelect categories={categories} value={category} onChange={onCategoryChange} disabled={disabled} />
+      <CategorySelect
+        categories={categories}
+        value={category}
+        onChange={onCategoryChange}
+        disabled={disabled}
+      />
       <span
         className={`text-[11px] ${status === "error" ? "text-danger" : status === "saved" ? "text-success" : "text-muted"}`}
       >

@@ -11,7 +11,7 @@ function useAutosave(
   category: number,
   title: string,
   content: string,
-  onSaved: (updatedAt: string) => void,
+  onSaved: (updatedAt: string) => void
 ) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const lastSaved = useRef("");
@@ -69,7 +69,7 @@ export function useNoteEditor(id: number) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [closing, setClosing] = useState(false);
   const autosave = useAutosave(id, ready, category, title, content, (updatedAt) =>
-    setUpdatedAt(updatedAt),
+    setUpdatedAt(updatedAt)
   );
 
   useEffect(() => {
