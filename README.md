@@ -44,6 +44,14 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Demo account
+
+A demo account is automatically created when running the development server locally (`python manage.py runserver`). This does not apply to Docker production deployments.
+
+| Email | Password |
+|-------|----------|
+| `demo@noted.app` | `demo1234` |
+
 ## Tests and checks
 
 ```bash

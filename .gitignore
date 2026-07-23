@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Dependencies
+backend/.venv/
+frontend/node_modules/
+
+# Build outputs
+backend/staticfiles/
+backend/.pytest_cache/
+frontend/.next/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Environment
+backend/.env.local
+frontend/.env.local
+
+# Database
+backend/db.sqlite3
+
+# IDE
+.vscode/
+.idea/

@@ -44,6 +44,64 @@ def test_login_uses_email(client, user):
 
 
 @pytest.mark.django_db
+def test_register_rejects_duplicate_email(client, user):
+    response = client.post("/api/auth/register/", {"email": "owner@example.com", "password": "strong-pass-123"})
+    assert response.status_code == 400
+    assert "already exists" in str(response.data["error"]["details"]["email"])
+
+
+@pytest.mark.django_db
+def test_register_rejects_short_password(client):
+    response = client.post("/api/auth/register/", {"email": "new@example.com", "password": "short"})
+    assert response.status_code == 400
+    assert "at least 8" in str(response.data["error"]["details"]["password"])
+
+
+@pytest.mark.django_db
+def test_login_rejects_wrong_password(client, user):
+    response = client.post("/api/auth/token/", {"email": "owner@example.com", "password": "wrong-password"})
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_login_rejects_unknown_email(client):
+    response = client.post("/api/auth/token/", {"email": "nobody@example.com", "password": "strong-pass-123"})
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_login_rejects_inactive_user(client):
+    user = User.objects.create_user(username="inactive@example.com", email="inactive@example.com", password="strong-pass-123")
+    user.is_active = False
+    user.save()
+    response = client.post("/api/auth/token/", {"email": "inactive@example.com", "password": "strong-pass-123"})
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_token_refresh_returns_new_access_token(client):
+    response = client.post("/api/auth/register/", {"email": "new@example.com", "password": "strong-pass-123"})
+    refresh = response.data["refresh"]
+    response = client.post("/api/auth/token/refresh/", {"refresh": refresh})
+    assert response.status_code == 200
+    assert response.data["access"]
+
+
+@pytest.mark.django_db
+def test_me_returns_authenticated_user(authed_client, user):
+    response = authed_client.get("/api/auth/me/")
+    assert response.status_code == 200
+    assert response.data["email"] == user.email
+    assert response.data["id"] == user.id
+
+
+@pytest.mark.django_db
+def test_me_requires_authentication(client):
+    response = client.get("/api/auth/me/")
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
 def test_notes_are_scoped_to_authenticated_owner(authed_client, user):
     own_category = Category.objects.create(owner=user, name="Personal", color="#A9C8C0")
     other = User.objects.create_user(username="other@example.com", password="strong-pass-123")

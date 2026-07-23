@@ -34,21 +34,23 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   }
 
   return <main className="grid min-h-screen place-items-center bg-auth">
-    <section className="flex flex-col max-w-[384px] place-items-center" aria-labelledby="auth-title">
+    <section className="flex flex-col max-w-[384px] place-items-center px-4" aria-labelledby="auth-title">
       {isSignup ? <Image
         src={signin}
         alt="Sign In"
         width={190}
         height={140}
+        className="animate-characterBounce"
       /> :
         <Image
           src={signup}
           alt="Sign Up"
           width={96}
           height={114}
+          className="animate-characterBounce"
         />
       }
-      <h1 id="auth-title" className="mb-8 font-serif text-[48px] font-bold text-muted">{isSignup ? "Yay, New Friend!" : "Yay, You're Back!"}</h1>
+      <h1 id="auth-title" className="mb-8 text-center font-serif text-[48px] font-bold text-muted sm:text-left">{isSignup ? "Yay, New Friend!" : "Yay, You're Back!"}</h1>
       <form onSubmit={submit} className="w-full flex flex-col gap-[17px] text-left">
         <input className={inputClasses} aria-label="Email address" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="Email Address" required />
         <span className="relative block w-full">
