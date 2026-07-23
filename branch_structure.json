@@ -1,0 +1,24 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "feat/frontend-improvements-linters-ci",
+    "feat/latest-polishing",
+    "fix/auth-details",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "feat/frontend-improvements-linters-ci": "main",
+    "feat/latest-polishing": "main",
+    "fix/auth-details": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "feat/frontend-improvements-linters-ci",
+    "feat/latest-polishing",
+    "fix/auth-details",
+    "origin"
+  ]
+}

@@ -55,7 +55,7 @@ def test_login_uses_email(client, user):
 
 
 @pytest.mark.django_db
-def test_register_rejects_duplicate_email(client, user):
+def test_register_rejects_duplicate_email(client, user):  # noqa: ARG001
     response = client.post(
         "/api/auth/register/", {"email": "owner@example.com", "password": "strong-pass-123"}
     )
@@ -71,7 +71,7 @@ def test_register_rejects_short_password(client):
 
 
 @pytest.mark.django_db
-def test_login_rejects_wrong_password(client, user):
+def test_login_rejects_wrong_password(client, user):  # noqa: ARG001
     response = client.post(
         "/api/auth/token/", {"email": "owner@example.com", "password": "wrong-password"}
     )
