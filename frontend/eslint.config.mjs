@@ -18,6 +18,11 @@ const config = [
       "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "react/react-in-jsx-scope": "off",
+      "max-lines": ["error", { max: 300, skipBlankLines: true, skipComments: true }],
+      "max-lines-per-function": ["error", { max: 50, skipBlankLines: true, skipComments: true }],
+      "complexity": ["error", 10],
+      "max-depth": ["error", 4],
+      "max-nested-callbacks": ["error", 3],
     },
   },
 ];
